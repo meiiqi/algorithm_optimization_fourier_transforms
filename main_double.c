@@ -7,23 +7,15 @@
 
 #define PI 3.14159265
 
-double complex complexExp(double x)
-{
-    double arg = 2 * PI * x;
-    return cos(arg) + sin(arg) * I;
-}
-
 double complex * DFT (double complex * time_signal, int N)
 {
-    int s = -1;
-
     double complex * freq_signal = calloc(N, sizeof(double complex));
 
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
-            freq_signal[i] = freq_signal[i] + creal(time_signal[j]) * complexExp( (s * i * j) / (double) N);
+            freq_signal[i] = freq_signal[i] + creal(time_signal[j]) * cexp( (-2 * I * PI * i * j) / N);
         }
     }
 
@@ -39,7 +31,7 @@ double complex * iDFT (double * time_signal, int N)
     {
         for (int j = 0; j < N; j++)
         {
-            freq_signal[i] = freq_signal[i] + time_signal[j] / N * complexExp( (s * i * j) / (double) N);
+            freq_signal[i] = freq_signal[i] + time_signal[j] / N * cexp( (s * i * j) / (double) N);
         }
     }
 
@@ -54,8 +46,8 @@ void fft_recursion(double complex * copy, double complex * output, int N, int st
 		fft_recursion(output + step, copy + step, N, step * 2);
  
 		for (int i = 0; i < N; i += 2 * step) {
-			double complex t = cexp(-I * PI * i / N) * output[i + step];
-			copy[i / 2]     = output[i] + t;
+			double complex t = output[i + step] * cexp(-I * PI * i / N);
+			copy[i / 2] = output[i] + t;
 			copy[(i + N)/2] = output[i] - t;
 		}
 	}
@@ -96,6 +88,7 @@ void print_complex_to_csv(double complex * array, int N)
 
     fp = fopen("./complex.csv", "w");
 
+    // print on first row
     fprintf(fp, "%f", creal(array[0]));
 
     for (int i = 1; i < N; i++)
@@ -103,6 +96,7 @@ void print_complex_to_csv(double complex * array, int N)
         fprintf(fp,",%f", creal(array[i]));
     }
 
+    // print on second row
     fprintf(fp, "\n%f", cimag(array[0]));
 
     for (int i = 1; i < N; i++)
@@ -128,23 +122,30 @@ void print_real_to_csv(double complex * array, int N)
     fclose(fp);    
 }
 
-void print_performance_to_csv(double * array_1, double * array_2, int N)
+void print_performance_to_csv(int * row_1, double * row_2, double * row_3, int N)
 {
     FILE *fp;
     fp = fopen("./performance.csv", "w");
 
-    fprintf(fp, "%f", array_1[0]);
+    fprintf(fp, "%d", row_1[0]);
 
     for (int i = 1; i < N; i++)
     {
-        fprintf(fp,",%f", array_1[i]);
+        fprintf(fp,",%d", row_1[i]);
     }
 
-    fprintf(fp, "\n%f", array_2[0]);
+    fprintf(fp, "\n%f", row_2[0]);
 
     for (int i = 1; i < N; i++)
     {
-        fprintf(fp,",%f", array_2[i]);
+        fprintf(fp,",%f", row_2[i]);
+    }
+
+    fprintf(fp, "\n%f", row_3[0]);
+
+    for (int i = 1; i < N; i++)
+    {
+        fprintf(fp,",%f", row_3[i]);
     }
 
     fclose(fp);    
@@ -208,7 +209,7 @@ int main(void)
         /////////////////////////////////////////////////
     }
 
-    print_performance_to_csv(DFT_avg_time_array, FFT_avg_time_array, sizeof(nsamples_array)/sizeof(nsamples_array[0]));
+    print_performance_to_csv(nsamples_array, DFT_avg_time_array, FFT_avg_time_array, array_size);
 
     return 0;
 }
