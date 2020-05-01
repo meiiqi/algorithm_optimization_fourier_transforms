@@ -22,7 +22,6 @@ double complex * DFT (double complex * time_signal, int N)
     return freq_signal;
 }
 
-// https://rosettacode.org/wiki/Fast_Fourier_transform#C
 void fft_recursion_inplace(double complex * input_output, double complex * copy, int N, int step)
 {
 	if (step < N) {
