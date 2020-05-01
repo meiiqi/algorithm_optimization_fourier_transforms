@@ -265,7 +265,7 @@ int main(void)
         /////////////////////////////////////////////////
     }
 
-    print_performance_to_csv("./Testing/performance.csv", nsamples_array, DFT_avg_time_array, FFT1_avg_time_array, FFT2_avg_time_array, array_size);
+    print_performance_to_csv("./Performance/performance.csv", nsamples_array, DFT_avg_time_array, FFT1_avg_time_array, FFT2_avg_time_array, array_size);
 
     return 0;
 }
