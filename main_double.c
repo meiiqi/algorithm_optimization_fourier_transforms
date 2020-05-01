@@ -3,8 +3,8 @@
 #include <string.h>
 #include <math.h>
 #include <complex.h>
+#include <time.h>
 
-#define nsamples 360 // # samples per iteration
 #define PI 3.14159265
 
 double complex complexExp(double x)
@@ -13,61 +13,84 @@ double complex complexExp(double x)
     return cos(arg) + sin(arg) * I;
 }
 
-double complex * DFT (double * time_signal)
+double complex * DFT (double complex * time_signal, int N)
 {
     int s = -1;
 
-    double complex * freq_signal = calloc(nsamples, sizeof(double complex));
+    double complex * freq_signal = calloc(N, sizeof(double complex));
 
-    for (int i = 0; i < nsamples; i++) // change to input_size
+    for (int i = 0; i < N; i++)
     {
-        for (int j = 0; j < nsamples; j++)
+        for (int j = 0; j < N; j++)
         {
-            freq_signal[i] = freq_signal[i] + time_signal[j] * complexExp( (s * i * j) / (double) nsamples);
+            freq_signal[i] = freq_signal[i] + creal(time_signal[j]) * complexExp( (s * i * j) / (double) N);
         }
     }
 
     return freq_signal;
 }
 
-double complex * iDFT (double * time_signal)
+double complex * iDFT (double * time_signal, int N)
 {
     int s = 1;
-    double complex * freq_signal = malloc(sizeof(double complex) * nsamples);
+    double complex * freq_signal = malloc(sizeof(double complex) * N);
 
-    for (int i = 0; i < nsamples; i++)
+    for (int i = 0; i < N; i++)
     {
-        for (int j = 0; j < nsamples; j++)
+        for (int j = 0; j < N; j++)
         {
-            freq_signal[i] = freq_signal[i] + time_signal[j] / nsamples * complexExp( (s * i * j) / (double) nsamples);
+            freq_signal[i] = freq_signal[i] + time_signal[j] / N * complexExp( (s * i * j) / (double) N);
         }
     }
 
     return freq_signal;
 }
 
-double complex * FFT (double * time_signal)
+// https://rosettacode.org/wiki/Fast_Fourier_transform#C
+void fft_recursion(double complex * copy, double complex * output, int N, int step)
 {
-    return NULL;
+	if (step < N) {
+		fft_recursion(output, copy, N, step * 2);
+		fft_recursion(output + step, copy + step, N, step * 2);
+ 
+		for (int i = 0; i < N; i += 2 * step) {
+			double complex t = cexp(-I * PI * i / N) * output[i + step];
+			copy[i / 2]     = output[i] + t;
+			copy[(i + N)/2] = output[i] - t;
+		}
+	}
 }
 
-void generate_signal (double * signal)
+double complex * FFT(double complex * input, int N)
+{
+    double complex * output = calloc(N, sizeof(double complex));
+    double complex copy[N];
+	for (int i = 0; i < N; i++)
+    {
+        output[i] = input[i];
+        copy[i] = input[i];
+    }
+    
+	fft_recursion(copy, output, N, 1);
+    return output;
+}
+
+void generate_signal (double complex * signal, int N)
 {
     int nperiod = 2;
     double sampling_time_rad = nperiod * 2 * PI;
 
-    double t_resolution_rad = sampling_time_rad / nsamples;
+    double t_resolution_rad = sampling_time_rad / N;
 
-    for (int i = 0; i < nsamples; i++)
+    for (int i = 0; i < N; i++)
     {
         double t_rad = i * t_resolution_rad;
 
-        signal[i] = cos(50*t_rad);
-        // printf("%d: %f\n", i, signal[i]);
+        signal[i] = cos(50 * t_rad);
     }
 }
 
-void print_complex_to_csv(double complex * array, int array_size)
+void print_complex_to_csv(double complex * array, int N)
 { 
     FILE *fp;
 
@@ -75,14 +98,14 @@ void print_complex_to_csv(double complex * array, int array_size)
 
     fprintf(fp, "%f", creal(array[0]));
 
-    for (int i = 1; i < array_size; i++)
+    for (int i = 1; i < N; i++)
     {
         fprintf(fp,",%f", creal(array[i]));
     }
 
     fprintf(fp, "\n%f", cimag(array[0]));
 
-    for (int i = 1; i < array_size; i++)
+    for (int i = 1; i < N; i++)
     {
         fprintf(fp,",%f", cimag(array[i]));
     }
@@ -90,16 +113,38 @@ void print_complex_to_csv(double complex * array, int array_size)
     fclose(fp);
 }
 
-void print_real_to_csv(double * array, int array_size)
+void print_real_to_csv(double complex * array, int N)
 {
     FILE *fp;
     fp = fopen("./real.csv", "w");
 
-    fprintf(fp, "%f", array[0]);
+    fprintf(fp, "%f", creal(array[0]));
 
-    for (int i = 1; i < array_size; i++)
+    for (int i = 1; i < N; i++)
     {
-        fprintf(fp,",%f", array[i]);
+        fprintf(fp,",%f", creal(array[i]));
+    }
+
+    fclose(fp);    
+}
+
+void print_performance_to_csv(double * array_1, double * array_2, int N)
+{
+    FILE *fp;
+    fp = fopen("./performance.csv", "w");
+
+    fprintf(fp, "%f", array_1[0]);
+
+    for (int i = 1; i < N; i++)
+    {
+        fprintf(fp,",%f", array_1[i]);
+    }
+
+    fprintf(fp, "\n%f", array_2[0]);
+
+    for (int i = 1; i < N; i++)
+    {
+        fprintf(fp,",%f", array_2[i]);
     }
 
     fclose(fp);    
@@ -107,20 +152,63 @@ void print_real_to_csv(double * array, int array_size)
 
 int main(void)
 {
-    double time_signal[nsamples];
-    generate_signal(time_signal);
+    int nsamples_array[] = {64, 128, 256, 512, 1024, 2048}; // # samples per iteration (need to be powers of two)
+    int n_iterations = 100;
+    int array_size = sizeof(nsamples_array)/sizeof(nsamples_array[0]);
+    double DFT_avg_time_array[array_size];
+    double FFT_avg_time_array[array_size];
 
-    // time
-    double complex * new_signal = DFT(time_signal);
-    // time
+    for (int i = 0; i < array_size; i++)
+    {
+        int N = nsamples_array[i];
+        printf("%d: Number of samples: %d\n", i, N);
 
-    print_complex_to_csv(new_signal, nsamples);
-    print_real_to_csv(time_signal, nsamples); 
+        double complex time_signal[N];
+        generate_signal(time_signal, N);
+        double DFT_avg_time = 0;
+        double FFT_avg_time = 0;
 
-    // time
-    // FFT(NULL);
-    // time
+        /////////////////////////////////////////////////
+        // NAIVE APPROACH
+        for (int j = 0; j < n_iterations; j++)
+        {
+            clock_t begin = clock();
+            double complex * new_signal = DFT(time_signal, N);
+            clock_t end = clock();
+            DFT_avg_time += (double)(end - begin);
+            free(new_signal);
+        }
+        DFT_avg_time_array[i] = DFT_avg_time / n_iterations;
 
-    // compare performance
+        printf("Average Time DFT (ms): %f\n", DFT_avg_time_array[i]);
+        
+        // // --- Exporting the signals to CSV for plotting in Python --- 
+        // // print_real_to_csv(time_signal, N); 
+        // // print_complex_to_csv(new_signal, N);
+        // /////////////////////////////////////////////////
+
+        // /////////////////////////////////////////////////
+        // // OPTIMIZED APPROACH
+
+        for (int j = 0; j < n_iterations; j++)
+        {
+            clock_t begin = clock();
+            double complex * new_signal = FFT(time_signal, N);
+            clock_t end = clock();
+            FFT_avg_time += (double)(end - begin);
+            free(new_signal);
+        }
+        FFT_avg_time_array[i] = FFT_avg_time / n_iterations;
+
+        printf("Average Time FFT (ms): %f\n", FFT_avg_time_array[i]);
+
+        // --- Exporting the signals to CSV for plotting in Python --- 
+        // print_real_to_csv(time_signal, N); 
+        // print_complex_to_csv(new_signal, N);
+        /////////////////////////////////////////////////
+    }
+
+    print_performance_to_csv(DFT_avg_time_array, FFT_avg_time_array, sizeof(nsamples_array)/sizeof(nsamples_array[0]));
+
     return 0;
 }
