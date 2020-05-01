@@ -9,7 +9,7 @@
 * Linux
 
 ### Running the Performance Test
-_Note: Feel free to change any of these parameters in the code._
+_Note: Feel free to change any of these parameters in [the code](./main_run_multiple.c)._
 * number of iterations = 50 (default)
 * number of samples to test = {64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384} (default)
 * output csv filename to store performance results = `"./Performance/performance.csv"` (default)
@@ -22,7 +22,7 @@ gcc -O0 main_run_multiple.c -o performance_test.out -std=c99 -lm
 
 ### Running a Single Iteration to Save the Signals to csv
 
-_Note: Feel free to change any of these parameters in the code._
+_Note: Feel free to change any of these parameters in [the code](./main_run_single.c)._
 * number of iterations = 50 (default)
 * number of samples to test = 256 (default)
 * output csv filename to store DFT time signal results = `"./DFT/real.csv"` (default)
