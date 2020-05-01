@@ -12,7 +12,7 @@
 _Note: Code should run without changing the default values. Feel free to change any of these parameters in [the code](./main_run_multiple.c)._
 * number of iterations = 50 (default)
 * number of samples to test = {64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384} (default)
-* angular frequency of the waveform = 150 (default)
+* angular frequency of the waveform = 50 (default)
 * the waveform = cos ( ang_freq * t_rad) (default)
 * output csv filename to store performance results = `"./Performance/performance.csv"` (default)
 
