@@ -201,7 +201,7 @@ int main(void)
     for (int i = 0; i < array_size; i++)
     {
         int N = nsamples_array[i];
-        printf("%d: Number of samples: %d\n", i, N);
+        printf("[Iteration #%d] Number of samples: %d\n", i, N);
 
         double complex time_signal[N];
         generate_signal(ang_freq, time_signal, N);
@@ -221,7 +221,7 @@ int main(void)
         }
         DFT_avg_time_array[i] = DFT_avg_time / n_iterations;
 
-        printf("Average Time DFT (ms): %f\n", DFT_avg_time_array[i]);        
+        printf("Average Time DFT (ms): %f\n", DFT_avg_time_array[i]/CLOCKS_PER_SEC*1000);        
         // /////////////////////////////////////////////////
 
 
@@ -238,7 +238,7 @@ int main(void)
         }
         FFT1_avg_time_array[i] = FFT1_avg_time / n_iterations;
 
-        printf("Average Time FFT outofplace (good) (ms): %f\n", FFT1_avg_time_array[i]);
+        printf("Average Time FFT outofplace (good) (ms): %f\n", FFT1_avg_time_array[i]/CLOCKS_PER_SEC*1000);
         /////////////////////////////////////////////////
 
         // /////////////////////////////////////////////////
@@ -253,11 +253,11 @@ int main(void)
         }
         FFT2_avg_time_array[i] = FFT2_avg_time / n_iterations;
 
-        printf("Average Time FFT inplace (ms): %f\n", FFT2_avg_time_array[i]);
+        printf("Average Time FFT inplace (ms): %f\n", FFT2_avg_time_array[i]/CLOCKS_PER_SEC*1000);
         /////////////////////////////////////////////////
     }
 
-    print_performance_to_csv("./Performance/performance_long.csv", nsamples_array, DFT_avg_time_array, FFT1_avg_time_array, FFT2_avg_time_array, array_size);
+    print_performance_to_csv("./Performance/performance.csv", nsamples_array, DFT_avg_time_array, FFT1_avg_time_array, FFT2_avg_time_array, array_size);
 
     return 0;
 }

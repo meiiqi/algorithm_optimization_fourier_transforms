@@ -22,7 +22,6 @@ double complex * DFT (double complex * time_signal, int N)
     return freq_signal;
 }
 
-// https://rosettacode.org/wiki/Fast_Fourier_transform#C
 void fft_recursion_inplace(double complex * input_output, double complex * copy, int N, int step)
 {
 	if (step < N) {
@@ -201,7 +200,7 @@ int main(void)
     for (int i = 0; i < array_size; i++)
     {
         int N = nsamples_array[i];
-        printf("%d: Number of samples: %d\n", i, N);
+        printf("Number of samples: %d\n", i, N);
 
         double complex time_signal[N];
         generate_signal(ang_freq, time_signal, N);
@@ -245,7 +244,7 @@ int main(void)
         FFT1_avg_time_array[i] = FFT1_avg_time / n_iterations;
   
 
-        printf("Average Time FFT outofplace (good) (ms): %f\n", FFT1_avg_time_array[i]);
+        printf("Average Time FFT outofplace (ms): %f\n", FFT1_avg_time_array[i]);
         /////////////////////////////////////////////////
 
         // /////////////////////////////////////////////////
@@ -266,7 +265,7 @@ int main(void)
         /////////////////////////////////////////////////
     }
 
-    print_performance_to_csv("./Testing/performance_final1.csv", nsamples_array, DFT_avg_time_array, FFT1_avg_time_array, FFT2_avg_time_array, array_size);
+    print_performance_to_csv("./Testing/performance.csv", nsamples_array, DFT_avg_time_array, FFT1_avg_time_array, FFT2_avg_time_array, array_size);
 
     return 0;
 }
