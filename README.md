@@ -14,6 +14,7 @@ _Note: Code should run without changing the default values. Feel free to change 
 * number of samples to test = {64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384} (default)
 * angular frequency of the waveform = 50 (default)
 * the waveform = cos ( ang_freq * t_rad) (default)
+* generate waveform for # of time periods = 2 (default)
 * output csv filename to store performance results = `"./Performance/performance.csv"` (default)
 
 ```
@@ -29,6 +30,7 @@ _Note: Code should run without changing the default values. Feel free to change 
 * number of samples to test = {256} (default)
 * angular frequency of the waveform = 50 (default)
 * the waveform = cos ( ang_freq * t_rad) (default)
+* generate waveform for # of time periods = 2 (default)
 * output csv filename to store DFT time signal results = `"./DFT/real.csv"` (default)
 * output csv filename to store DFT frequency signal results = `"./DFT/complex.csv"` (default)
 * output csv filename to store out-of-place FFT time signal results = `"./FFT_out/real.csv"` (default)
