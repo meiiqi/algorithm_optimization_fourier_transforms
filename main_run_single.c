@@ -222,7 +222,7 @@ int main(void)
         }
         DFT_avg_time_array[i] = DFT_avg_time / n_iterations;
 
-        printf("Average Time DFT (ms): %f\n", DFT_avg_time_array[i]);     
+        printf("Average Time DFT (ms): %f\n", DFT_avg_time_array[i]/CLOCKS_PER_SEC*1000);     
         // /////////////////////////////////////////////////
 
 
@@ -244,7 +244,7 @@ int main(void)
         FFT1_avg_time_array[i] = FFT1_avg_time / n_iterations;
   
 
-        printf("Average Time FFT outofplace (ms): %f\n", FFT1_avg_time_array[i]);
+        printf("Average Time FFT outofplace (ms): %f\n", FFT1_avg_time_array[i]/CLOCKS_PER_SEC*1000);
         /////////////////////////////////////////////////
 
         // /////////////////////////////////////////////////
@@ -261,7 +261,7 @@ int main(void)
         }
         FFT2_avg_time_array[i] = FFT2_avg_time / n_iterations;
 
-        printf("Average Time FFT inplace (ms): %f\n", FFT2_avg_time_array[i]);
+        printf("Average Time FFT inplace (ms): %f\n", FFT2_avg_time_array[i]/CLOCKS_PER_SEC*1000);
         /////////////////////////////////////////////////
     }
 
