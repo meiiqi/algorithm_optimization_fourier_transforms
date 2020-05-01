@@ -25,9 +25,9 @@ gcc -O0 main_run_multiple.c -o performance_test.out -std=c99 -lm
 ### Running a Single Iteration to Save the Signals to csv
 
 _Note: Code should run without changing the default values. Feel free to change any of these parameters in [the code](./main_run_single.c)._
-* number of iterations = 50 (default)
-* number of samples to test = 256 (default)
-* angular frequency of the waveform = 150 (default)
+* number of iterations = 1 (default)
+* number of samples to test = {256} (default)
+* angular frequency of the waveform = 50 (default)
 * the waveform = cos ( ang_freq * t_rad) (default)
 * output csv filename to store DFT time signal results = `"./DFT/real.csv"` (default)
 * output csv filename to store DFT frequency signal results = `"./DFT/complex.csv"` (default)
